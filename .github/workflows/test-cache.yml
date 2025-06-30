@@ -32,6 +32,19 @@ jobs:
           #          tools: parallel-lint, php-cs-fixer
           tools: parallel-lint, phpcs
 
+      - name: Cache Icinga dependencies
+        id: cache-icinga-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            vendor/icingaweb2
+            vendor/icinga-php-library
+            vendor/icinga-php-thirdparty
+          key: icinga-deps-v1-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            icinga-deps-v1-${{ runner.os }}-
+            icinga-deps-v1-
+
       - name: Setup dependencies (with cache)
         if: steps.cache-icinga-deps.outputs.cache-hit != 'true'
         run: |
