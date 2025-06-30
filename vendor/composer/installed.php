@@ -3,7 +3,7 @@
         'name' => 'icinga/workflow-test',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '7363faf583bfe99b64a7a372fb10177cf7e0cf6a',
+        'reference' => '090e97e7f8435c2e1e30b3fee9838e6e606b9fb5',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'icinga/workflow-test' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '7363faf583bfe99b64a7a372fb10177cf7e0cf6a',
+            'reference' => '090e97e7f8435c2e1e30b3fee9838e6e606b9fb5',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
