@@ -1,4 +1,4 @@
-name: PHP
+name: test simple
 
 on:
   push:
