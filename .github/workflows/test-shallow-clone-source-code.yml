@@ -40,13 +40,8 @@ jobs:
           git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-library.git vendor/icinga-php-library
           git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-thirdparty.git vendor/icinga-php-thirdparty
 
-      - name: Check for composer.json
-        id: composer-check
-        run: echo "exists=$(test -f composer.json && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-
-
       - name: composer install
-        if: steps.composer-check.outputs.exists == 'true'
+        if: hashFiles('composer.json') != ''
         run: |
           if [ -f composer.json ]; then
             composer install --no-progress --prefer-dist
