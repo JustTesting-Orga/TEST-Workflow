@@ -12,7 +12,7 @@ jobs:
 
   phplint:
     name: PHP Lint
-    uses: ./.github/workflows/test-shallow-clone-source-code.yml@main
+    uses: ./.github/workflows/test-shallow-clone-source-code.yml
     with:
       php-version: '["8.2", "8.3", "8.4"]'
       os: '["ubuntu-latest"]'
@@ -20,7 +20,7 @@ jobs:
 
   phpunit:
     if:  hashFiles('tests/**') != ''
-    uses: ./.github/workflows/phpunit.yml@main
+    uses: ./.github/workflows/phpunit.yml
     with:
       php-version: '["8.2", "8.3", "8.4"]'
       os: '["ubuntu-latest"]'
