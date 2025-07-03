@@ -43,4 +43,4 @@ jobs:
         - name: PHPUnit
           env:
             ICINGAWEB_LIBDIR: _libraries
-          run: phpunit --verbose --bootstrap _icingaweb2/test/php/bootstrap.php
+          run: phpunit --display-phpunit-deprecations --verbose --bootstrap _icingaweb2/test/php/bootstrap.php
