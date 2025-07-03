@@ -1,25 +1,24 @@
 name: test shallow clone source code
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-#env:
-#  PHP_CS_FIXER_IGNORE_ENV: 1
+  workflow_call:
+    inputs:
+      php-version:
+        type: string
+      os:
+        type: string
 
 jobs:
   static-analysis:
-    runs-on: ubuntu-latest
+    name: Static analysis for version ${{ matrix.php-version }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
-        php-version: [ '8.2', '8.3', '8.4' ]
+        php-version: ${{ fromJson(inputs.php-version) }}
+        os: ${{ fromJson(inputs.os) }}
 
-    name: Static analysis for version ${{ matrix.php-version }}
 
     steps:
       - name: Checkout
@@ -31,7 +30,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          #          tools: parallel-lint, php-cs-fixer
           tools: parallel-lint, phpcs
 
       - name: Setup dependencies
@@ -40,7 +38,7 @@ jobs:
           git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-library.git vendor/icinga-php-library
           git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-thirdparty.git vendor/icinga-php-thirdparty
 
-      - name: composer install
+      - name: Install composer
         if: hashFiles('composer.json') != ''
         run: |
           if [ -f composer.json ]; then
@@ -51,7 +49,8 @@ jobs:
         run: parallel-lint --exclude vendor .
 
 
-      - name: Code Style
+      - name: Create phpcs.xml
+        if: hashFiles('phpcs.xml') == ''
         run: |
           cat <<'EOF' >phpcs.xml
           <?xml version="1.0"?>
@@ -71,4 +70,6 @@ jobs:
           </ruleset>
           EOF
 
+      - name: Check Code Style
+        run: |
           phpcs -wps --colors
