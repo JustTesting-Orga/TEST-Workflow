@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Icinga\Test\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Icinga\Test\Example;
 
 class ExampleTest extends TestCase
