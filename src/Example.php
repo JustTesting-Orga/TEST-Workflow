@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Icinga\Test;
+namespace Icinga\Module\TestModule;
 
 class Example
 {

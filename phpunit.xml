@@ -7,12 +7,11 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="false">
-<!--         bootstrap="_icingaweb2/test/php/bootstrap.php"-->
-<!--         testdox="true">-->
+         stopOnFailure="false"
+         bootstrap="_icingaweb2/test/php/bootstrap.php">
 
     <testsuites>
-        <testsuite name="Icinga Module PHP Unit Tests">
+        <testsuite name="Test Modul PHP Unit Tests">
             <directory suffix="Test.php">tests</directory>
         </testsuite>
     </testsuites>

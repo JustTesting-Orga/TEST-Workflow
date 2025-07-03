@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Icinga\Test\Tests;
+namespace YProject\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Icinga\Test\Example;
+use Icinga\Module\TestModule\Example;
 
 class ExampleTest extends TestCase
 {
