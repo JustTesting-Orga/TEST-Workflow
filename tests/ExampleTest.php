@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace YProject\Tests;
+namespace Tests\Icinga\Module\TestModule;
 
 use PHPUnit\Framework\TestCase;
 use Icinga\Module\TestModule\Example;
