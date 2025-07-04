@@ -27,7 +27,7 @@ jobs:
           if [ -n "${{ inputs.php-version }}" ]; then
             php-version='${{ inputs.php-version }}'
           else
-            php-version=$(jq -c 'php-version' .github/php-version-config.json)
+            php-version=$(jq -c '.php-version' .github/php-version-config.json)
           fi
           
           echo "php-version=$php-version" >> $GITHUB_OUTPUT
