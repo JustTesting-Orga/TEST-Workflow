@@ -10,16 +10,28 @@ on:
 
 jobs:
 
-  php-version:
-    strategy:
-    matrix:
-      php-version: ["8.2", "8.3", "8.4"]
+  php-version-config:
+      runs-on: ubuntu-latest
+      outputs:
+        php-version: ${{ steps.config.outputs.php-version }}
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: '1'
+        - name: Load PHP version configuration
+          id: config
+          run: |
+            php-version=$(jq -c '.php-versions' .github/php-version-config.json)
+            echo "php-version=$php-version" >> $GITHUB_OUTPUT
 
   phplint:
+    needs: php-version-config
     name: PHP Lint
     uses: ./.github/workflows/test-shallow-clone-source-code.yml
     with:
-      php-version: ${{ matrix.php-version }}
+      php-version: ${{ needs.php-version-config.outputs.php-version }}
+#      os: '["ubuntu-latest"]'
     secrets: inherit
 
   tests-exists:
@@ -44,10 +56,11 @@ jobs:
           fi
 
   phpunit:
-    needs: tests-exists
+    needs: [tests-exists, php-version-config]
     if: needs.tests-exists.outputs.has-tests == 'true'
 #    needs.{JOB_NAME}.outputs.{JOB_OUTPUT}
     uses: ./.github/workflows/phpunit.yml
     with:
-      php-version: ${{ matrix.php-version }}
+      php-version: ${{ needs.php-version-config.outputs.php-version }}
+#      os: '["ubuntu-latest"]'
     secrets: inherit

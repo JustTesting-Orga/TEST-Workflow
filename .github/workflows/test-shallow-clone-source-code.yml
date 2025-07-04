@@ -5,19 +5,45 @@ on:
     inputs:
       php-version:
         type: string
-      os:
-        type: string
+        default: ''
+#      os:
+#        type: string
+  workflow_dispatch:
+
 
 jobs:
+
+  php-version-config:
+    runs-on: ubuntu-latest
+    outputs:
+      php-version: ${{ steps.config.outputs.php-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: '1'
+      - name: Load PHP version configuration
+        id: config
+        run: |
+          if [ -n "${{ inputs.php-version }}" ]; then
+            php-version='${{ inputs.php-version }}'
+          else
+            php-version=$(jq -c '.php-versions' .github/php-version-config.json)
+          fi
+          
+          echo "php-version=$php-version" >> $GITHUB_OUTPUT
+
   static-analysis:
+    needs: php-version-config
     name: Static analysis for version ${{ matrix.php-version }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        php-version: ${{ fromJson(inputs.php-version) }}
-        os: ${{ fromJson(inputs.os) }}
+        php-version: ${{ fromJson(needs.php-version-config.outputs.php-version) }}
+       # os: ${{ fromJson(inputs.os) }}
+#        os: ['ubuntu-latest']
 
     steps:
       - name: Checkout
@@ -37,7 +63,7 @@ jobs:
           git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-library.git vendor/icinga-php-library
           git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-thirdparty.git vendor/icinga-php-thirdparty
 
-      - name: Install composer
+      - name: Install dependencies from composer.json
         if: hashFiles('composer.json') != ''
         run: |
           if [ -f composer.json ]; then
