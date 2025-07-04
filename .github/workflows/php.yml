@@ -22,7 +22,7 @@ jobs:
         - name: Load PHP version configuration
           id: config
           run: |
-            php-version=$(jq -c 'php-versions' .github/php-version-config.json)
+            php-version=$(jq -c 'php-version' .github/php-version-config.json)
             echo "php-version=$php-version" >> $GITHUB_OUTPUT
 
   phplint:
