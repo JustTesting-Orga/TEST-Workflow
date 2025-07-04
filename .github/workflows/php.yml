@@ -28,7 +28,7 @@ jobs:
   phplint:
     needs: php-version-config
     name: PHP Lint
-    uses: ./.github/workflows/test-shallow-clone-source-code.yml
+    uses: test-phplint.yml
     with:
       php-version: ${{ needs.php-version-config.outputs.php-version }}
 #      os: '["ubuntu-latest"]'
