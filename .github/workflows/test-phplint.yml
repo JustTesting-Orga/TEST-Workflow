@@ -5,7 +5,6 @@ on:
     inputs:
       php-version:
         type: string
-        default: ''
 #      os:
 #        type: string
   workflow_dispatch:
