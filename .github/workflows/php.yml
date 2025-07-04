@@ -10,12 +10,16 @@ on:
 
 jobs:
 
+  php-version:
+    strategy:
+    matrix:
+      php-version: ["8.2", "8.3", "8.4"]
+
   phplint:
     name: PHP Lint
     uses: ./.github/workflows/test-shallow-clone-source-code.yml
     with:
-      php-version: '["8.2", "8.3", "8.4"]'
-      os: '["ubuntu-latest"]'
+      php-version: ${{ matrix.php-version }}
     secrets: inherit
 
   tests-exists:
@@ -27,6 +31,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: '1'
+
       - name: Check directory
         id: check
         run: |
@@ -42,6 +49,5 @@ jobs:
 #    needs.{JOB_NAME}.outputs.{JOB_OUTPUT}
     uses: ./.github/workflows/phpunit.yml
     with:
-      php-version: '["8.2", "8.3", "8.4"]'
-      os: '["ubuntu-latest"]'
+      php-version: ${{ matrix.php-version }}
     secrets: inherit
