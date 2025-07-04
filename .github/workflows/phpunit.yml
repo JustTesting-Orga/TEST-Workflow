@@ -3,67 +3,44 @@ name: PHP Unit Tests
 on:
   workflow_call:
     inputs:
-      phpversion:
+      php-version:
         type: string
-  workflow_dispatch:
-
+      os:
+        type: string
 
 jobs:
+    test:
+      name: Unit tests with php ${{ matrix.php-version }}
+      runs-on: ${{ matrix.os }}
 
-  phpversion-config:
-    runs-on: ubuntu-latest
-    outputs:
-      phpversion: ${{ steps.config.outputs.phpversion }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: '1'
-      - name: Load PHP version configuration
-        id: config
-        run: |
-          if [ -n "${{ inputs.phpversion }}" ]; then
-            phpversion='${{ inputs.phpversion }}'
-          else
-            phpversion=$(jq -c '.phpversion' .github/phpversion-config.json)
-          fi
+      strategy:
+        fail-fast: false
+        matrix:
+          php-version: ${{ fromJson(inputs.php-version) }}
+          os: ${{ fromJson(inputs.os) }}
 
-          echo "phpversion=$phpversion" >> $GITHUB_OUTPUT
+      steps:
+        - name: Checkout code base
+          uses: actions/checkout@v4
 
-  test:
-    needs: phpversion-config
-    name: Unit tests with php ${{ matrix.php-version }}
-    runs-on: ubuntu-latest
+        - name: Setup PHP
+          uses: shivammathur/setup-php@v2
+          with:
+            php-version: ${{ matrix.php-version }}
+            tools: phpunit
 
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version: ${{ fromJson(needs.phpversion-config.outputs.phpversion) }}
+        - name: Setup Icinga Web
+          run: |
+            git clone --depth 1 https://github.com/Icinga/icingaweb2.git _icingaweb2
+            ln -s `pwd` _icingaweb2/modules/icingadb
 
-    steps:
-      - name: Checkout code base
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: '1'
+        - name: Setup Libraries
+          run: |
+            mkdir _libraries
+            git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-library.git _libraries/ipl
+            git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-thirdparty.git _libraries/vendor
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          tools: phpunit
-
-      - name: Set up Icinga Web
-        run: |
-          git clone --depth 1 https://github.com/Icinga/icingaweb2.git _icingaweb2
-          ln -s `pwd` _icingaweb2/modules/icingadb
-
-      - name: Set up Libraries
-        run: |
-          mkdir _libraries
-          git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-library.git _libraries/ipl
-          git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-thirdparty.git _libraries/vendor
-
-      - name: PHPUnit
-        env:
-          ICINGAWEB_LIBDIR: _libraries
-        run: phpunit --testdox --display-warnings  --bootstrap _icingaweb2/test/php/bootstrap.php
+        - name: PHPUnit
+          env:
+            ICINGAWEB_LIBDIR: _libraries
+          run: phpunit --testdox --display-warnings  --bootstrap _icingaweb2/test/php/bootstrap.php

@@ -1,48 +1,24 @@
-name: PHP Lint
+name: test shallow clone source code
 
 on:
   workflow_call:
     inputs:
-      phpversion:
+      php-version:
         type: string
-#      os:
-#        type: string
-  workflow_dispatch:
-
+      os:
+        type: string
 
 jobs:
-
-  phpversion-config:
-    runs-on: ubuntu-latest
-    outputs:
-      phpversion: ${{ steps.config.outputs.phpversion }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: '1'
-      - name: Load PHP version configuration
-        id: config
-        run: |
-          if [ -n "${{ inputs.phpversion }}" ]; then
-            phpversion='${{ inputs.phpversion }}'
-          else
-            phpversion=$(jq -c '.phpversion' .github/phpversion-config.json)
-          fi
-          
-          echo "phpversion=$phpversion" >> $GITHUB_OUTPUT
-
   static-analysis:
-    needs: phpversion-config
     name: Static analysis for version ${{ matrix.php-version }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
-        php-version: ${{ fromJson(needs.phpversion-config.outputs.phpversion) }}
-       # os: ${{ fromJson(inputs.os) }}
-#        os: ['ubuntu-latest']
+        php-version: ${{ fromJson(inputs.php-version) }}
+        os: ${{ fromJson(inputs.os) }}
+
 
     steps:
       - name: Checkout
@@ -56,13 +32,13 @@ jobs:
           php-version: ${{ matrix.php-version }}
           tools: parallel-lint, phpcs
 
-      - name: Set up dependencies
+      - name: Setup dependencies
         run: |
           git clone --depth 1 https://github.com/Icinga/icingaweb2.git vendor/icingaweb2
           git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-library.git vendor/icinga-php-library
           git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-thirdparty.git vendor/icinga-php-thirdparty
 
-      - name: Install dependencies from composer.json
+      - name: Install composer
         if: hashFiles('composer.json') != ''
         run: |
           if [ -f composer.json ]; then
@@ -72,8 +48,9 @@ jobs:
       - name: Lint
         run: parallel-lint --exclude vendor .
 
+
       - name: Create phpcs.xml
-        if: hashFiles('.phpcs.xml') == ''
+        if: hashFiles('phpcs.xml') == ''
         run: |
           cat <<'EOF' >phpcs.xml
           <?xml version="1.0"?>

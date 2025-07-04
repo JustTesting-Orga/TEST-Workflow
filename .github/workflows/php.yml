@@ -10,28 +10,12 @@ on:
 
 jobs:
 
-  phpversion-config:
-      runs-on: ubuntu-latest
-      outputs:
-        phpversion: ${{ steps.config.outputs.phpversion }}
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: '1'
-        - name: Load PHP version configuration
-          id: config
-          run: |
-            phpversion=$(jq -c '.phpversion' .github/phpversion-config.json)
-            echo "phpversion=$phpversion" >> $GITHUB_OUTPUT
-
   phplint:
-    needs: phpversion-config
     name: PHP Lint
-    uses: ./.github/workflows/test-phplint.yml
+    uses: ./.github/workflows/test-shallow-clone-source-code.yml
     with:
-      phpversion: ${{ needs.phpversion-config.outputs.phpversion }}
-#      os: '["ubuntu-latest"]'
+      php-version: '["8.2", "8.3", "8.4"]'
+      os: '["ubuntu-latest"]'
     secrets: inherit
 
   tests-exists:
@@ -43,9 +27,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: '1'
-
       - name: Check directory
         id: check
         run: |
@@ -56,11 +37,11 @@ jobs:
           fi
 
   phpunit:
-    needs: [tests-exists, phpversion-config]
+    needs: tests-exists
     if: needs.tests-exists.outputs.has-tests == 'true'
 #    needs.{JOB_NAME}.outputs.{JOB_OUTPUT}
     uses: ./.github/workflows/phpunit.yml
     with:
-      phpversion: ${{ needs.phpversion-config.outputs.phpversion }}
-#      os: '["ubuntu-latest"]'
+      php-version: '["8.2", "8.3", "8.4"]'
+      os: '["ubuntu-latest"]'
     secrets: inherit
