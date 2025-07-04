@@ -17,9 +17,9 @@
 #
 #    strategy:
 #      matrix:
-#        php-version: [ '8.2', '8.3', '8.4' ]
+#        phpversion: [ '8.2', '8.3', '8.4' ]
 #
-#    name: Static analysis for version ${{ matrix.php-version }}
+#    name: Static analysis for version ${{ matrix.phpversion }}
 #
 #    steps:
 #      - name: Checkout
@@ -28,7 +28,7 @@
 #      - name: Set up PHP
 #        uses: shivammathur/setup-php@v2
 #        with:
-#          php-version: ${{ matrix.php-version }}
+#          phpversion: ${{ matrix.phpversion }}
 #          #          tools: parallel-lint, php-cs-fixer
 #          tools: parallel-lint, phpcs
 #

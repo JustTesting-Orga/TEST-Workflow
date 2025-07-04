@@ -3,30 +3,54 @@ name: PHP Unit Tests
 on:
   workflow_call:
     inputs:
-      php-version:
+      phpversion:
         type: string
-      os:
-        type: string
+  workflow_dispatch:
+
 
 jobs:
+
+  phpversion-config:
+    runs-on: ubuntu-latest
+    outputs:
+      phpversion: ${{ steps.config.outputs.phpversion }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: '1'
+      - name: Load PHP version configuration
+        id: config
+        run: |
+          if [ -n "${{ inputs.phpversion }}" ]; then
+            phpversion='${{ inputs.phpversion }}'
+          else
+            phpversion=$(jq -c '.phpversion' .github/phpversion-config.json)
+          fi
+
+          echo "phpversion=$phpversion" >> $GITHUB_OUTPUT
+
   test:
-    name: Unit tests with php ${{ matrix.php-version }}
-    runs-on: ${{ matrix.os }}
+    needs: phpversion-config
+    name: Unit tests with php ${{ matrix.phpversion }}
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        php-version: ${{ fromJson(inputs.php-version) }}
+        phpversion: ${{ fromJson(inputs.phpversion) }}
         os: ${{ fromJson(inputs.os) }}
 
     steps:
       - name: Checkout code base
         uses: actions/checkout@v4
+        with:
+          fetch-depth: '1'
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
+          phpversion: ${{ matrix.php-version }}
           tools: phpunit
 
       - name: Set up Icinga Web
