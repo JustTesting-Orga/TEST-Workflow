@@ -34,13 +34,13 @@ jobs:
 
   static-analysis:
     needs: phpversion-config
-    name: Static analysis for version ${{ matrix.phpversion }}
+    name: Static analysis for version ${{ matrix.php-version }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        phpversion: ${{ fromJson(needs.phpversion-config.outputs.phpversion) }}
+        php-version: ${{ fromJson(needs.phpversion-config.outputs.phpversion) }}
        # os: ${{ fromJson(inputs.os) }}
 #        os: ['ubuntu-latest']
 
@@ -53,7 +53,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          phpversion: ${{ matrix.phpversion }}
+          php-version: ${{ matrix.php-version }}
           tools: parallel-lint, phpcs
 
       - name: Set up dependencies

@@ -32,14 +32,13 @@ jobs:
 
   test:
     needs: phpversion-config
-    name: Unit tests with php ${{ matrix.phpversion }}
+    name: Unit tests with php ${{ matrix.php-version }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        phpversion: ${{ fromJson(inputs.phpversion) }}
-        os: ${{ fromJson(inputs.os) }}
+        php-version: ${{ fromJson(needs.phpversion-config.outputs.phpversion) }}
 
     steps:
       - name: Checkout code base
@@ -50,7 +49,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          phpversion: ${{ matrix.php-version }}
+          php-version: ${{ matrix.php-version }}
           tools: phpunit
 
       - name: Set up Icinga Web
