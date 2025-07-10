@@ -1,4 +1,4 @@
-name: test shallow clone source code
+name: Lint
 
 on:
   workflow_call:
@@ -6,20 +6,11 @@ on:
       php-version:
         type: string
         required: true
-#      os:
-#        type: string
-#
+
 jobs:
   static-analysis:
     name: Static analysis for version ${{ inputs.php-version }}
     runs-on: ubuntu-latest
-
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        php-version: ${{ fromJson(inputs.php-version) }}
-#        os: ${{ fromJson(inputs.os) }}
-
 
     steps:
       - name: Checkout

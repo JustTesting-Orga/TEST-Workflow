@@ -1,4 +1,4 @@
-name: PHP
+name: Jobs
 
 on:
   workflow_call:
@@ -10,56 +10,45 @@ on:
 
 
 jobs:
-#  build:
-#    runs-on: ${{ matrix.os }}
-##    runs-on: ubuntu-latest
-#
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        php: ${{ fromJson(inputs.phpVersions) }}
-#        os: ['ubuntu-latest']
-#
-#    steps:
-#      - name: Checkout code base
-#        uses: actions/checkout@v4
-
 
   phplint:
+    name: Lint
     strategy:
       matrix:
         php: ${{ fromJson(inputs.php-version) }}
-    name: PHP Lint
     uses: ./.github/workflows/test-phplint.yml #uses funktioniert nur auf joblevel nicht auf step
     with:
       php-version: ${{ matrix.php }}
-#      os: ["ubuntu-latest"]
     secrets: inherit
 
-#  tests-exists:
-#    runs-on: ubuntu-latest
-#    name: tests-exists
-#    outputs:
-#      has-tests: ${{ steps.check.outputs.exists }}
-#      # steps.{ID}.outputs.{OUTPUT_NAME}
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#      - name: Check directory
-#        id: check
-#        run: |
-#          if [ -d "tests" ]; then
-#            echo "exists=true" >> $GITHUB_OUTPUT
-#          else
-#            echo "exists=false" >> $GITHUB_OUTPUT
-#          fi
-#
-#  phpunit:
-#    needs: tests-exists
-#    if: needs.tests-exists.outputs.has-tests == 'true'
-#  #    needs.{JOB_NAME}.outputs.{JOB_OUTPUT}
-#    uses: ./.github/workflows/phpunit.yml
-#    with:
-#      php-version: ${{ inputs.php-version }}
-#      os: '["ubuntu-latest"]'
-#    secrets: inherit
+
+  tests-exists:
+    runs-on: ubuntu-latest
+    name: tests-exists
+    outputs:
+      has-tests: ${{ steps.check.outputs.exists }}
+      # steps.{ID}.outputs.{OUTPUT_NAME}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check directory
+        id: check
+        run: |
+          if [ -d "tests" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+  phpunit:
+    name: Unit Test
+    needs: tests-exists
+    if: needs.tests-exists.outputs.has-tests == 'true'
+  #    needs.{JOB_NAME}.outputs.{JOB_OUTPUT}
+    strategy:
+      matrix:
+        php: ${{ fromJson(inputs.php-version) }}
+    uses: ./.github/workflows/phpunit.yml
+    with:
+      php-version: ${{ matrix.php }}
+    secrets: inherit

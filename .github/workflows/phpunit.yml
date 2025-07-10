@@ -1,4 +1,4 @@
-name: PHP Unit Tests
+name: Unit Tests
 
 on:
   workflow_call:
@@ -10,14 +10,8 @@ on:
 
 jobs:
     test:
-      name: Unit tests with php ${{ matrix.php-version }}
-      runs-on: ${{ matrix.os }}
-
-      strategy:
-        fail-fast: false
-        matrix:
-          php-version: ${{ fromJson(inputs.php-version) }}
-          os: ${{ fromJson(inputs.os) }}
+      name: Unit tests with php ${{ inputs.php-version }}
+      runs-on: ubuntu-latest
 
       steps:
         - name: Checkout code base
@@ -26,7 +20,7 @@ jobs:
         - name: Setup PHP
           uses: shivammathur/setup-php@v2
           with:
-            php-version: ${{ matrix.php-version }}
+            php-version: ${{ inputs.php-version }}
             tools: phpunit
 
         - name: Setup Icinga Web
