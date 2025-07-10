@@ -5,19 +5,20 @@ on:
     inputs:
       php-version:
         type: string
-      os:
-        type: string
-
+        required: true
+#      os:
+#        type: string
+#
 jobs:
   static-analysis:
-    name: Static analysis for version ${{ matrix.php-version }}
-    runs-on: ${{ matrix.os }}
+    name: Static analysis for version ${{ inputs.php-version }}
+    runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version: ${{ fromJson(inputs.php-version) }}
-        os: ${{ fromJson(inputs.os) }}
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        php-version: ${{ fromJson(inputs.php-version) }}
+#        os: ${{ fromJson(inputs.os) }}
 
 
     steps:
@@ -29,7 +30,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
+          php-version: ${{ inputs.php-version }}
           tools: parallel-lint, phpcs
 
       - name: Setup dependencies
