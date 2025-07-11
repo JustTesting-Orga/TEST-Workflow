@@ -37,4 +37,4 @@ jobs:
         - name: PHPUnit
           env:
             ICINGAWEB_LIBDIR: _libraries
-          run: phpunit --testdox --display-warnings  --bootstrap _icingaweb2/test/php/bootstrap.php
+          run: phpunit --bootstrap _icingaweb2/test/php/bootstrap.php
