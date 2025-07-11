@@ -34,7 +34,7 @@ jobs:
       - name: Check directory
         id: check
         run: |
-          if [ -d "tests" ]; then
+          if [ -d "test" ]; then
             echo "Tests Directory exists"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
