@@ -22,9 +22,9 @@ jobs:
     secrets: inherit
 
 
-  tests-exists:
+  test-exists:
     runs-on: ubuntu-latest
-    name: tests-exists
+    name: test-exists
     outputs:
       has-tests: ${{ steps.check.outputs.exists }}
       # steps.{ID}.outputs.{OUTPUT_NAME}
@@ -44,8 +44,8 @@ jobs:
 
   phpunit:
     name: Unit Test
-    needs: tests-exists
-    if: needs.tests-exists.outputs.has-tests == 'true'
+    needs: test-exists
+    if: needs.test-exists.outputs.has-tests == 'true'
   #    needs.{JOB_NAME}.outputs.{JOB_OUTPUT}
     strategy:
       matrix:
