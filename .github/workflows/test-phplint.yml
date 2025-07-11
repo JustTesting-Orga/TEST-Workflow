@@ -24,7 +24,7 @@ jobs:
           php-version: ${{ inputs.php-version }}
           tools: parallel-lint, phpcs
 
-      - name: Setup dependencies
+      - name: Set up dependencies
         run: |
           git clone --depth 1 https://github.com/Icinga/icingaweb2.git vendor/icingaweb2
           git clone --depth 1 -b snapshot/nightly https://github.com/Icinga/icinga-php-library.git vendor/icinga-php-library
@@ -39,7 +39,6 @@ jobs:
 
       - name: Lint
         run: parallel-lint --exclude vendor .
-
 
       - name: Create phpcs.xml
         if: hashFiles('phpcs.xml') == ''

@@ -35,10 +35,10 @@ jobs:
         id: check
         run: |
           if [ -d "test" ]; then
-            echo "Tests Directory exists"
+            echo "Test directory exists"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
-          echo "Tests Directory does not exist"
+          echo "Test directory does not exist"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
